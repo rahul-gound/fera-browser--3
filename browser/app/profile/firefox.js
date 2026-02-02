@@ -2176,8 +2176,8 @@ pref("pdfjs.previousHandler.alwaysAskBeforeHandling", false);
 pref("pdfjs.handleOctetStream", true);
 
 // Is the sidebar positioned ahead of the content browser
-pref("sidebar.position_start", true);
-pref("sidebar.revamp", false);
+pref("sidebar.position_start", false);
+pref("sidebar.revamp", true);
 // This is nightly only for now, as we need to address bug 1933527 and bug 1934039.
 #ifdef NIGHTLY_BUILD
 pref("sidebar.revamp.round-content-area", true);
@@ -2208,6 +2208,8 @@ pref("sidebar.new-sidebar.has-used", false);
 pref("sidebar.notification.badge.aichat", false);
 
 pref("browser.ml.chat.enabled", true);
+
+pref("fera.search.uiUrl", "https://search.fera.ai");
 pref("browser.ml.chat.hideLocalhost", true);
 pref("browser.ml.chat.maxLength", 7000);
 pref("browser.ml.chat.menu", true);
