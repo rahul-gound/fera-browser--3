@@ -1,0 +1,50 @@
+name: Build Fera-Search (Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Cache to speed up rebuilds (optional but helpful)
+      - name: Cache build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.mozbuild
+            obj-*
+          key: mozbuild-${{ runner.os }}-${{ hashFiles('**/mozconfig', '**/MOZCONFIG*') }}
+          restore-keys: |
+            mozbuild-${{ runner.os }}-
+
+      - name: Prepare output folder
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force downloadeds | Out-Null
+
+      # If your repo uses mozconfig, ensure it exists.
+      # If not, mach will use defaults (may fail).
+      - name: Build
+        shell: pwsh
+        run: |
+          ./mach --no-interactive build
+
+      - name: Package (portable ZIP/EXE)
+        shell: pwsh
+        run: |
+          ./mach --no-interactive package
+          # Copy common artifacts from obj-*/dist
+          $dist = Get-ChildItem -Directory -Path "obj-*" -Filter "dist" -Recurse | Select-Object -First 1
+          if (-not $dist) { throw "dist folder not found under obj-*." }
+          Get-ChildItem -Path $dist.FullName -Recurse -Include "*.exe","*.msi","*.zip" |
+            Copy-Item -Destination "downloadeds" -Force
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fera-search-windows
+          path: downloadeds/
