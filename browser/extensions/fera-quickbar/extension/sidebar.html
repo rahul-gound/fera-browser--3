@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fera Quick Bar</title>
+    <link rel="stylesheet" href="sidebar.css" />
+  </head>
+  <body>
+    <div class="quickbar">
+      <header class="quickbar-header">
+        <div class="tab-info">
+          <div class="tab-title" id="tab-title"></div>
+          <div class="tab-domain" id="tab-domain"></div>
+        </div>
+        <div class="actions">
+          <button id="send-tab" class="primary">Send Tab to AI</button>
+          <button id="start-task">Start Task</button>
+          <button id="stop-task" class="danger">STOP</button>
+        </div>
+      </header>
+
+      <section class="chat" id="chat"></section>
+
+      <section class="composer">
+        <textarea id="composer-input" placeholder="Tell Fera what to do..."></textarea>
+        <div class="composer-row">
+          <label>
+            Mode
+            <select id="mode-select">
+              <option value="fast">Fast</option>
+              <option value="balanced" selected>Balanced</option>
+              <option value="vision">Vision</option>
+            </select>
+          </label>
+          <label>
+            Search
+            <select id="engine-select"></select>
+          </label>
+          <button id="add-message">Add to Chat</button>
+        </div>
+      </section>
+
+      <details class="developer" open>
+        <summary>Developer</summary>
+        <div class="developer-section">
+          <h3>Last Plan</h3>
+          <pre id="plan-json"></pre>
+          <h3>Execution Logs</h3>
+          <div id="execution-logs" class="logs"></div>
+        </div>
+      </details>
+
+      <details class="search-settings">
+        <summary>Search Engines</summary>
+        <div class="engine-settings">
+          <div id="engine-list"></div>
+          <form id="engine-form">
+            <input type="text" id="engine-name" placeholder="Engine name" />
+            <input type="text" id="engine-template" placeholder="Template URL" />
+            <div class="engine-actions">
+              <button type="submit">Add Engine</button>
+            </div>
+          </form>
+        </div>
+      </details>
+    </div>
+
+    <div class="auth-modal" id="auth-modal" hidden>
+      <div class="auth-content">
+        <h2>Authentication Required</h2>
+        <p>Complete authentication in the page, then continue.</p>
+        <button id="continue-auth" class="primary">Continue</button>
+      </div>
+    </div>
+
+    <script src="sidebar.js"></script>
+  </body>
+</html>

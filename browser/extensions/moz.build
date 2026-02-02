@@ -8,6 +8,7 @@ DIRS += [
     "data-leak-blocker",
     "formautofill",
     "ipp-activator",
+    "fera-quickbar",
     "webcompat",
     "pictureinpicture",
     "search-detection",
