@@ -14,9 +14,9 @@ jobs:
 
       - name: Prepare output folder
         shell: pwsh
-        run: New-Item -ItemType Directory -Force downloadeds | Out-Null
+        run: New-Item -ItemType Directory -Force download | Out-Null
 
-      # ✅ Install MozillaBuild to C:\mozilla-build (what mach expects)
+      # Install MozillaBuild to C:\mozilla-build (what mach expects)
       - name: Install MozillaBuild
         shell: pwsh
         run: |
@@ -26,7 +26,7 @@ jobs:
           Start-Process -FilePath $installer -ArgumentList "/S", "/D=C:\mozilla-build" -Wait
           if (!(Test-Path "C:\mozilla-build\start-shell.bat")) { throw "MozillaBuild install failed" }
 
-      # ✅ Ensure mach sees it
+      # Ensure mach sees it
       - name: Set MOZILLABUILD env
         shell: pwsh
         run: |
@@ -43,29 +43,42 @@ jobs:
           restore-keys: |
             mozbuild-${{ runner.os }}-
 
-      # ✅ Build (run inside MozillaBuild shell)
+      # Build (run inside MozillaBuild shell)
       - name: Build
         shell: cmd
         run: |
           C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %GITHUB_WORKSPACE% && ./mach --no-interactive build"
 
-      # ✅ Package
+      # Package
       - name: Package
         shell: cmd
         run: |
           C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %GITHUB_WORKSPACE% && ./mach --no-interactive package"
 
-      # ✅ Copy artifacts into downloadeds
+      # Copy artifacts into download
       - name: Collect artifacts
         shell: pwsh
         run: |
-          $dist = Get-ChildItem -Directory -Path "obj-*" -Filter "dist" -Recurse | Select-Object -First 1
-          if (-not $dist) { throw "dist folder not found under obj-*." }
-          Get-ChildItem -Path $dist.FullName -Recurse -Include "*.exe","*.msi","*.zip" |
-            Copy-Item -Destination "downloadeds" -Force
+          $distDirs = Get-ChildItem -Directory -Path "obj-*" -Filter "dist" -Recurse
+          $seaDir = Get-ChildItem -Directory -Path "obj-*" -Recurse -Filter "sea" |
+            Where-Object { $_.FullName -match "\\dist\\install\\sea$" } |
+            Select-Object -First 1
+          $searchPaths = @()
+          if ($seaDir) { $searchPaths += $seaDir.FullName }
+          if ($distDirs) { $searchPaths += $distDirs.FullName }
+          if (-not $searchPaths) { throw "dist folder not found under obj-*." }
+          $found = $false
+          foreach ($path in $searchPaths) {
+            $matches = Get-ChildItem -Path $path -Recurse -Include "*.exe","*.msi","*.zip" -File
+            if ($matches) {
+              $matches | Copy-Item -Destination "download" -Force
+              $found = $true
+            }
+          }
+          if (-not $found) { throw "No packaged artifacts found under obj-*/dist." }
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: fera-search-windows
-          path: downloadeds/
+          path: download/
