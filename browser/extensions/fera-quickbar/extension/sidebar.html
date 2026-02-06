@@ -39,6 +39,20 @@
           </label>
           <button id="add-message">Add to Chat</button>
         </div>
+        <div class="composer-row assistant-row">
+          <label>
+            AI Model
+            <select id="model-select">
+              <option value="default" selected>Fera Default</option>
+              <option value="qwen-image">Qwen Image (Free)</option>
+              <option value="vision-api">Vision API (Key Required)</option>
+            </select>
+          </label>
+          <label>
+            Vision API Key
+            <input type="password" id="model-api-key" placeholder="Optional key" />
+          </label>
+        </div>
       </section>
 
       <details class="developer" open>

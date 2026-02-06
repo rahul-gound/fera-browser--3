@@ -14,6 +14,10 @@ const TEMPLATE_ATTR = "feraTemplate";
 
 const DEFAULT_ENGINES = [
   {
+    name: "Fera Search",
+    template: "https://fera-search.tech/?q={searchTerms}",
+  },
+  {
     name: "Fera",
     template: "https://search.fera.ai/?q={searchTerms}&tab=all",
   },

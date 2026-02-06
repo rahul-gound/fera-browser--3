@@ -11,6 +11,8 @@ const elements = {
   composerInput: document.getElementById("composer-input"),
   modeSelect: document.getElementById("mode-select"),
   engineSelect: document.getElementById("engine-select"),
+  modelSelect: document.getElementById("model-select"),
+  modelApiKey: document.getElementById("model-api-key"),
   sendTab: document.getElementById("send-tab"),
   startTask: document.getElementById("start-task"),
   stopTask: document.getElementById("stop-task"),
@@ -28,6 +30,13 @@ const elements = {
 let currentTabId = null;
 let currentState = null;
 let currentConfig = null;
+let currentAssistantConfig = null;
+
+const ASSISTANT_CONFIG_KEY = "assistantConfig";
+const DEFAULT_ASSISTANT_CONFIG = {
+  model: "default",
+  visionApiKey: "",
+};
 
 async function getActiveTab() {
   let tabs = await browser.tabs.query({ active: true, currentWindow: true });
@@ -149,6 +158,28 @@ async function loadSearchConfig() {
   currentConfig = await browser.feraSearch.getConfig();
   renderEngineSelect(currentConfig);
   renderEngineSettings(currentConfig);
+}
+
+function applyAssistantConfig(config) {
+  elements.modelSelect.value = config.model || DEFAULT_ASSISTANT_CONFIG.model;
+  elements.modelApiKey.value = config.visionApiKey || "";
+  elements.modelApiKey.disabled = elements.modelSelect.value !== "vision-api";
+}
+
+async function loadAssistantConfig() {
+  let stored = await browser.storage.local.get(ASSISTANT_CONFIG_KEY);
+  currentAssistantConfig = stored[ASSISTANT_CONFIG_KEY] || DEFAULT_ASSISTANT_CONFIG;
+  applyAssistantConfig(currentAssistantConfig);
+}
+
+async function persistAssistantConfig() {
+  currentAssistantConfig = {
+    model: elements.modelSelect.value,
+    visionApiKey: elements.modelApiKey.value.trim(),
+  };
+  await browser.storage.local.set({
+    [ASSISTANT_CONFIG_KEY]: currentAssistantConfig,
+  });
 }
 
 async function setDefaultEngine(name) {
@@ -273,6 +304,8 @@ async function startTask() {
     options: {
       mode: elements.modeSelect.value,
       engineOverride: elements.engineSelect.value,
+      model: elements.modelSelect.value,
+      visionApiKey: elements.modelApiKey.value.trim(),
     },
   });
 }
@@ -328,6 +361,15 @@ elements.stopTask.addEventListener("click", stopTask);
 
 elements.engineForm.addEventListener("submit", addEngine);
 
+elements.modelSelect.addEventListener("change", () => {
+  elements.modelApiKey.disabled = elements.modelSelect.value !== "vision-api";
+  persistAssistantConfig();
+});
+
+elements.modelApiKey.addEventListener("input", () => {
+  persistAssistantConfig();
+});
+
 elements.continueAuth.addEventListener("click", async () => {
   elements.authModal.hidden = true;
   if (currentTabId) {
@@ -339,4 +381,5 @@ elements.continueAuth.addEventListener("click", async () => {
 });
 
 loadSearchConfig();
+loadAssistantConfig();
 refreshState();

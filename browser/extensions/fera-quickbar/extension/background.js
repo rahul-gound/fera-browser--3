@@ -8,6 +8,7 @@ const PLANNER_BASE_URL = "https://himanshu-711-fera-ai-assistant.hf.space";
 const ALLOWED_TOOLS = new Set([
   "click",
   "open_tab",
+  "open_password_manager",
   "press_key",
   "scroll",
   "search_default",
@@ -201,6 +202,11 @@ async function executeStep(tabId, step) {
     return { ok: true };
   }
 
+  if (step.tool === "open_password_manager") {
+    await browser.tabs.create({ url: "about:logins" });
+    return { ok: true };
+  }
+
   if (step.tool === "search_default") {
     let config = await browser.feraSearch.getConfig();
     let query = step.args?.query || "";
@@ -252,6 +258,12 @@ async function runPlan(tabId, userGoal, options) {
     };
     if (options.engineOverride) {
       payload.search_engine_override = options.engineOverride;
+    }
+    if (options.model) {
+      payload.assistant_model = options.model;
+    }
+    if (options.visionApiKey) {
+      payload.vision_api_key = options.visionApiKey;
     }
 
     let response = await fetch(`${PLANNER_BASE_URL}/plan`, {

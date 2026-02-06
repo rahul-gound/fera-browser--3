@@ -2209,7 +2209,7 @@ pref("sidebar.notification.badge.aichat", false);
 
 pref("browser.ml.chat.enabled", true);
 
-pref("fera.search.uiUrl", "https://search.fera.ai");
+pref("fera.search.uiUrl", "https://fera-search.tech");
 pref("browser.ml.chat.hideLocalhost", true);
 pref("browser.ml.chat.maxLength", 7000);
 pref("browser.ml.chat.menu", true);

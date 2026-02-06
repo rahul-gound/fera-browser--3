@@ -131,6 +131,10 @@ button:disabled {
   align-items: center;
 }
 
+.composer-row.assistant-row {
+  grid-template-columns: 1fr 1fr;
+}
+
 .composer-row label {
   display: flex;
   flex-direction: column;
@@ -140,6 +144,12 @@ button:disabled {
 }
 
 select {
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #bcbcc1;
+}
+
+.composer-row input {
   padding: 4px 6px;
   border-radius: 6px;
   border: 1px solid #bcbcc1;
