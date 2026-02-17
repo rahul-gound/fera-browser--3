@@ -12,7 +12,7 @@ var feraQuickBar = {
     { label: "GitHub", url: "https://github.com" },
     { label: "Wikipedia", url: "https://www.wikipedia.org" },
     { label: "Reddit", url: "https://www.reddit.com" },
-    { label: "Twitter", url: "https://x.com" },
+    { label: "Twitter / X", url: "https://x.com" },
   ],
 
   init() {
@@ -63,8 +63,8 @@ var feraQuickBar = {
       if (stored) {
         return JSON.parse(stored);
       }
-    } catch (e) {
-      // Fall through to defaults.
+    } catch {
+      // Invalid JSON or missing pref; fall through to defaults.
     }
     return this._defaultShortcuts;
   },

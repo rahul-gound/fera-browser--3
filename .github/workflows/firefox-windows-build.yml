@@ -5,10 +5,13 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   win:
     runs-on: windows-latest
-    timeout-minutes: 360
+    timeout-minutes: 180
 
     steps:
       - uses: actions/checkout@v4

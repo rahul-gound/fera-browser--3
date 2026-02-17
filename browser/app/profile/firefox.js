@@ -3578,4 +3578,5 @@ pref("fera.quickbar.search.url", "https://rahul-gound.github.io/fera-search-demo
 pref("fera.ai.assistant.enabled", true);
 pref("fera.ai.assistant.api.key", "");
 pref("fera.ai.assistant.model", "sarvam-m");
+pref("fera.ai.assistant.endpoint", "https://api.sarvam.ai/v1/chat/completions");
 pref("fera.privacy.shield.enabled", true);

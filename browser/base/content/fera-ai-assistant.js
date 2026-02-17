@@ -66,21 +66,22 @@ var feraAIAssistant = {
       "fera.ai.assistant.model",
       "sarvam-m"
     );
+    let endpoint = Services.prefs.getStringPref(
+      "fera.ai.assistant.endpoint",
+      "https://api.sarvam.ai/v1/chat/completions"
+    );
     try {
-      let response = await fetch(
-        "https://api.sarvam.ai/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + apiKey,
-          },
-          body: JSON.stringify({
-            model,
-            messages: this._messages,
-          }),
-        }
-      );
+      let response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + apiKey,
+        },
+        body: JSON.stringify({
+          model,
+          messages: this._messages,
+        }),
+      });
       if (!response.ok) {
         this._appendMessage(
           "assistant",
@@ -90,7 +91,8 @@ var feraAIAssistant = {
       }
       let data = await response.json();
       let reply =
-        data.choices?.[0]?.message?.content || "No response received.";
+        data.choices?.[0]?.message?.content ||
+        "No content in API response.";
       this._messages.push({ role: "assistant", content: reply });
       this._appendMessage("assistant", reply);
     } catch (e) {
