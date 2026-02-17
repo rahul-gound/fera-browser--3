@@ -659,6 +659,9 @@ var gBrowserInit = {
 
     CaptivePortalWatcher.delayedStartup();
 
+    feraQuickBar.init();
+    feraAIAssistant.init();
+
     SessionStore.promiseAllWindowsRestored.then(() => {
       this._schedulePerWindowIdleTasks();
       document.documentElement.setAttribute("sessionrestored", "true");

@@ -289,6 +289,13 @@ Preferences.addAll([
 
   // Permissions
   { id: "media.setsinkid.enabled", type: "bool" },
+
+  // Fera Browser
+  { id: "places.history.enabled", type: "bool" },
+  { id: "fera.quickbar.enabled", type: "bool" },
+  { id: "fera.privacy.shield.enabled", type: "bool" },
+  { id: "fera.ai.assistant.enabled", type: "bool" },
+  { id: "fera.ai.assistant.api.key", type: "string" },
 ]);
 
 if (Services.prefs.getBoolPref("privacy.ui.status_card", false)) {

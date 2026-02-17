@@ -3,6 +3,44 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 <hbox flex="1" id="browser">
+  <vbox id="fera-quickbar" class="chromeclass-extrachrome">
+    <vbox id="fera-quickbar-inner">
+      <hbox id="fera-quickbar-header" align="center">
+        <label id="fera-quickbar-title" value="Quick Bar"/>
+        <spacer flex="1"/>
+        <toolbarbutton id="fera-quickbar-close" class="close-icon tabbable"
+                       tooltiptext="Close Quick Bar"
+                       oncommand="feraQuickBar.toggle();"/>
+      </hbox>
+      <vbox id="fera-quickbar-search">
+        <html:input id="fera-quickbar-search-input"
+                    type="text"
+                    placeholder="Search with Fera..."
+                    aria-label="Fera Quick Search"/>
+      </vbox>
+      <vbox id="fera-quickbar-shortcuts" flex="1">
+        <label class="fera-section-label" value="Quick Access"/>
+        <vbox id="fera-quickbar-links"/>
+      </vbox>
+      <vbox id="fera-quickbar-tools">
+        <label class="fera-section-label" value="Tools"/>
+        <hbox id="fera-quickbar-tool-buttons">
+          <toolbarbutton id="fera-tool-shield"
+                         class="fera-tool-button"
+                         tooltiptext="Privacy Shield"
+                         oncommand="feraQuickBar.toggleShield();"/>
+          <toolbarbutton id="fera-tool-ai"
+                         class="fera-tool-button"
+                         tooltiptext="AI Assistant"
+                         oncommand="feraAIAssistant.toggle();"/>
+          <toolbarbutton id="fera-tool-history"
+                         class="fera-tool-button"
+                         tooltiptext="Toggle History"
+                         oncommand="feraQuickBar.toggleHistory();"/>
+        </hbox>
+      </vbox>
+    </vbox>
+  </vbox>
   <box context="sidebar-context-menu" id="sidebar-main" hidden="true">
     <html:sidebar-main flex="1">
       <box id="vertical-tabs" slot="tabstrip" customizable="true" contextmenu="toolbar-context-menu"></box>
@@ -28,6 +66,26 @@
   <tabbox id="tabbrowser-tabbox" flex="1" tabcontainer="tabbrowser-tabs">
     <tabpanels id="tabbrowser-tabpanels" flex="1" selectedIndex="0"/>
   </tabbox>
+  <splitter id="fera-ai-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="none" resizeafter="sibling" hidden="true"/>
+  <vbox id="fera-ai-panel" hidden="true" class="chromeclass-extrachrome">
+    <hbox id="fera-ai-header" align="center">
+      <label id="fera-ai-title" value="Fera AI Assistant"/>
+      <spacer flex="1"/>
+      <toolbarbutton id="fera-ai-close" class="close-icon tabbable"
+                     tooltiptext="Close AI Assistant"
+                     oncommand="feraAIAssistant.toggle();"/>
+    </hbox>
+    <vbox id="fera-ai-messages" flex="1"/>
+    <hbox id="fera-ai-input-row">
+      <html:input id="fera-ai-input"
+                  type="text"
+                  placeholder="Ask Fera AI..."
+                  aria-label="AI Chat Input"/>
+      <toolbarbutton id="fera-ai-send"
+                     label="Send"
+                     oncommand="feraAIAssistant.sendMessage();"/>
+    </hbox>
+  </vbox>
   <splitter id="ai-window-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="none" resizeafter="sibling" hidden="true"/>
   <vbox id="ai-window-box" hidden="true" class="chromeclass-extrachrome ai-window-right-sidebar">
     <stack class="ai-window-browser-stack" flex="1">

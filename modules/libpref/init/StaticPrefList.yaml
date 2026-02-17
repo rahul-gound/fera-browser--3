@@ -16300,7 +16300,7 @@
 # Enforce tracking protection in all modes.
 - name: privacy.trackingprotection.enabled
   type: bool
-  value: false
+  value: true
   mirror: always
 
 # Enforce tracking protection in Private Browsing mode.

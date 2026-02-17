@@ -1,0 +1,198 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#fera-quickbar {
+  width: 220px;
+  min-width: 180px;
+  max-width: 320px;
+  background: var(--toolbar-bgcolor, #f9f9fb);
+  border-inline-end: 1px solid var(--chrome-content-separator-color, #e0e0e6);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#fera-quickbar-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px;
+  gap: 8px;
+}
+
+#fera-quickbar-header {
+  padding: 4px 0;
+}
+
+#fera-quickbar-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+#fera-quickbar-search {
+  padding: 4px 0;
+}
+
+#fera-quickbar-search-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--input-border-color, #cfcfd8);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--input-bgcolor, #fff);
+  color: var(--input-color, inherit);
+  outline: none;
+  box-sizing: border-box;
+}
+
+#fera-quickbar-search-input:focus {
+  border-color: var(--focus-outline-color, #0061e0);
+  box-shadow: 0 0 0 1px var(--focus-outline-color, #0061e0);
+}
+
+.fera-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-color-deemphasized, #5b5b66);
+  padding: 6px 0 2px;
+}
+
+#fera-quickbar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fera-quickbar-link {
+  appearance: none;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: start;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: inherit;
+}
+
+.fera-quickbar-link:hover {
+  background: var(--button-hover-bgcolor, #e0e0e6);
+}
+
+.fera-quickbar-link:active {
+  background: var(--button-active-bgcolor, #cfcfd8);
+}
+
+#fera-quickbar-tool-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.fera-tool-button {
+  appearance: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  background: var(--button-bgcolor, #e0e0e6);
+  border: none;
+  color: inherit;
+}
+
+.fera-tool-button:hover {
+  background: var(--button-hover-bgcolor, #cfcfd8);
+}
+
+/* AI Assistant Panel */
+
+#fera-ai-panel {
+  width: 300px;
+  min-width: 240px;
+  max-width: 420px;
+  background: var(--toolbar-bgcolor, #f9f9fb);
+  border-inline-start: 1px solid var(--chrome-content-separator-color, #e0e0e6);
+  display: flex;
+  flex-direction: column;
+}
+
+#fera-ai-header {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--chrome-content-separator-color, #e0e0e6);
+}
+
+#fera-ai-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+#fera-ai-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fera-ai-message {
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 90%;
+  word-wrap: break-word;
+}
+
+.fera-ai-message-user {
+  background: var(--button-primary-bgcolor, #0061e0);
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
+}
+
+.fera-ai-message-assistant {
+  background: var(--button-bgcolor, #e0e0e6);
+  color: var(--text-color, inherit);
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+}
+
+#fera-ai-input-row {
+  padding: 8px;
+  border-top: 1px solid var(--chrome-content-separator-color, #e0e0e6);
+  gap: 4px;
+}
+
+#fera-ai-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--input-border-color, #cfcfd8);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--input-bgcolor, #fff);
+  color: var(--input-color, inherit);
+  outline: none;
+  box-sizing: border-box;
+}
+
+#fera-ai-input:focus {
+  border-color: var(--focus-outline-color, #0061e0);
+  box-shadow: 0 0 0 1px var(--focus-outline-color, #0061e0);
+}
+
+#fera-ai-send {
+  appearance: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--button-primary-bgcolor, #0061e0);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+#fera-ai-send:hover {
+  background: var(--button-primary-hover-bgcolor, #0250bb);
+}

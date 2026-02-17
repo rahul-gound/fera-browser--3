@@ -1477,7 +1477,8 @@ pref("browser.quitShortcut.disabled", false);
 pref("accessibility.blockautorefresh", false);
 
 // Whether history is enabled or not.
-pref("places.history.enabled", true);
+// Fera: History is disabled by default for privacy. Users can enable it in Settings.
+pref("places.history.enabled", false);
 
 // The default Places log level.
 pref("places.loglevel", "Error");
@@ -3570,3 +3571,11 @@ pref("browser.settings-redesign.enabled", false);
 #if defined(MOZ_WIDGET_GTK)
 pref("widget.support-xdg-config", true, locked);
 #endif
+
+// Fera Browser customizations
+pref("fera.quickbar.enabled", true);
+pref("fera.quickbar.search.url", "https://rahul-gound.github.io/fera-search-demo-2");
+pref("fera.ai.assistant.enabled", true);
+pref("fera.ai.assistant.api.key", "");
+pref("fera.ai.assistant.model", "sarvam-m");
+pref("fera.privacy.shield.enabled", true);

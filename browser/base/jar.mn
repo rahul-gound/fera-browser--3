@@ -52,6 +52,8 @@ browser.jar:
         content/browser/browser-init.js                     (content/browser-init.js)
         content/browser/browser-main.js                     (content/browser-main.js)
         content/browser/browser-menubar.js                  (content/browser-menubar.js)
+        content/browser/fera-quickbar.js                    (content/fera-quickbar.js)
+        content/browser/fera-ai-assistant.js                (content/fera-ai-assistant.js)
         content/browser/browser-pageActions.js              (content/browser-pageActions.js)
         content/browser/browser-pagestyle.js                (content/browser-pagestyle.js)
         content/browser/browser-places.js                   (content/browser-places.js)
