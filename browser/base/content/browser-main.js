@@ -33,6 +33,8 @@
   Services.scriptloader.loadSubScript("chrome://browser/content/search/autocomplete-popup.js", this);
   Services.scriptloader.loadSubScript("chrome://browser/content/search/searchbar.js", this);
   ChromeUtils.importESModule("chrome://browser/content/urlbar/UrlbarInput.mjs", { global: "current" });
+  Services.scriptloader.loadSubScript("chrome://browser/content/fera-quickbar.js", this);
+  Services.scriptloader.loadSubScript("chrome://browser/content/fera-ai-assistant.js", this);
 }
 
 window.onload = gBrowserInit.onLoad.bind(gBrowserInit);

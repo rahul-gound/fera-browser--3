@@ -1,0 +1,83 @@
+name: Build Fera Browser (Windows .exe)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  win:
+    runs-on: windows-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare output folder
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force downloadeds | Out-Null
+
+      - name: Install MozillaBuild
+        shell: pwsh
+        run: |
+          $url = "https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe"
+          $installer = "$env:TEMP\MozillaBuildSetup.exe"
+          Invoke-WebRequest -Uri $url -OutFile $installer
+          Start-Process -FilePath $installer -ArgumentList "/S", "/D=C:\mozilla-build" -Wait
+          if (!(Test-Path "C:\mozilla-build\start-shell.bat")) { throw "MozillaBuild install failed" }
+
+      - name: Set MOZILLABUILD env
+        shell: pwsh
+        run: |
+          echo "MOZILLABUILD=C:\mozilla-build" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Cache mozbuild state
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:\Users\runneradmin\.mozbuild
+            obj-*
+          key: mozbuild-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            mozbuild-${{ runner.os }}-
+
+      - name: Bootstrap
+        shell: cmd
+        run: |
+          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %GITHUB_WORKSPACE% && ./mach --no-interactive bootstrap --application-choice=browser --no-system-changes"
+
+      - name: Build
+        shell: cmd
+        run: |
+          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %GITHUB_WORKSPACE% && ./mach --no-interactive build"
+
+      - name: Package
+        shell: cmd
+        run: |
+          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %GITHUB_WORKSPACE% && ./mach --no-interactive package"
+
+      - name: Create Installer
+        shell: cmd
+        run: |
+          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %GITHUB_WORKSPACE% && ./mach --no-interactive installer"
+
+      - name: Collect artifacts
+        shell: pwsh
+        run: |
+          $dist = Get-ChildItem -Directory -Path "obj-*" -Filter "dist" -Recurse | Select-Object -First 1
+          if (-not $dist) { throw "dist folder not found under obj-*." }
+          Get-ChildItem -Path $dist.FullName -Recurse -Include "*.exe","*.msi","*.zip" |
+            Copy-Item -Destination "downloadeds" -Force
+          $install = Get-ChildItem -Path "obj-*" -Recurse -Include "*.installer.exe" | Select-Object -First 1
+          if ($install) {
+            Copy-Item -Path $install.FullName -Destination "downloadeds" -Force
+          }
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fera-browser-windows
+          path: downloadeds/

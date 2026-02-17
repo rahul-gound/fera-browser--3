@@ -918,4 +918,41 @@
   </vbox>
 </groupbox>
 
+<!-- Fera Browser Settings -->
+<groupbox id="feraSettingsGroup" data-category="panePrivacy" hidden="true">
+  <label><html:h2>Fera Browser</html:h2></label>
+  <hbox align="center">
+    <checkbox id="feraHistoryEnabled"
+              preference="places.history.enabled"
+              label="Enable browsing history"
+              accesskey="H"/>
+  </hbox>
+  <hbox align="center">
+    <checkbox id="feraQuickBarEnabled"
+              preference="fera.quickbar.enabled"
+              label="Show Quick Bar"
+              accesskey="Q"/>
+  </hbox>
+  <hbox align="center">
+    <checkbox id="feraPrivacyShield"
+              preference="fera.privacy.shield.enabled"
+              label="Enable Privacy Shield (block trackers, ads, cookies)"
+              accesskey="P"/>
+  </hbox>
+  <hbox align="center">
+    <checkbox id="feraAIEnabled"
+              preference="fera.ai.assistant.enabled"
+              label="Enable AI Assistant"
+              accesskey="A"/>
+  </hbox>
+  <hbox align="center">
+    <label control="feraAIKey">AI API Key:</label>
+    <html:input id="feraAIKey"
+                type="password"
+                preference="fera.ai.assistant.api.key"
+                placeholder="Enter Sarvam-M API key"
+                style="flex: 1; margin-inline-start: 8px;"/>
+  </hbox>
+</groupbox>
+
 </html:template>
