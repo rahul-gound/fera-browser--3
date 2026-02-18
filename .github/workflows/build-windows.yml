@@ -59,7 +59,7 @@ jobs:
       - name: Collect artifacts
         shell: pwsh
         run: |
-          $dist = Get-ChildItem -Directory -Path "obj-*" -Filter "dist" -Recurse | Select-Object -First 1
+          $dist = Get-ChildItem -Directory -Path "obj-*" -Recurse | Where-Object { $_.Name -eq "dist" } | Select-Object -First 1
           if (-not $dist) { throw "dist folder not found under obj-*." }
           Get-ChildItem -Path $dist.FullName -Recurse -Include "*.exe","*.msi","*.zip" |
             Copy-Item -Destination "downloadeds" -Force
