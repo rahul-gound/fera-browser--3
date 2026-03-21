@@ -123,6 +123,9 @@ var gExceptionPaths = [
   "resource://newtab/",
   "chrome://newtab/",
 
+  // The Fera Quick Bar add-on.
+  "resource://builtin-addons/fera-quickbar/",
+
   // UniFFI test files.
   "moz-src:///toolkit/components/uniffi-bindgen-gecko-js/tests/generated/",
 

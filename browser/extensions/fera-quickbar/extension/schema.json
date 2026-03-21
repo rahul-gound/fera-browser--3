@@ -1,0 +1,50 @@
+[
+  {
+    "namespace": "feraSearch",
+    "description": "Fera search engine configuration",
+    "functions": [
+      {
+        "name": "getConfig",
+        "type": "function",
+        "description": "Get current Fera search engine config",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "setConfig",
+        "type": "function",
+        "description": "Set and apply Fera search engine config",
+        "async": true,
+        "parameters": [
+          {
+            "name": "config",
+            "type": "object",
+            "properties": {
+              "engines": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "template": { "type": "string" }
+                  },
+                  "required": ["name", "template"]
+                }
+              },
+              "defaultEngine": { "type": "string" },
+              "uiUrl": { "type": "string" }
+            },
+            "required": ["engines", "defaultEngine"]
+          }
+        ]
+      },
+      {
+        "name": "applyConfig",
+        "type": "function",
+        "description": "Apply stored config to the search service",
+        "async": true,
+        "parameters": []
+      }
+    ]
+  }
+]

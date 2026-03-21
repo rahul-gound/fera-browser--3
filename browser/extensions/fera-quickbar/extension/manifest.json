@@ -1,0 +1,41 @@
+{
+  "manifest_version": 2,
+  "name": "Fera Quick Bar",
+  "hidden": true,
+  "version": "1.0.0",
+  "description": "Fera Quick Bar",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "fera-quickbar@fera.ai",
+      "strict_min_version": "139.0"
+    }
+  },
+  "permissions": ["activeTab", "tabs", "storage"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "sidebar_action": {
+    "default_title": "Fera Quick Bar",
+    "default_panel": "sidebar.html",
+    "default_icon": "icons/quickbar.svg",
+    "open_at_install": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "experiment_apis": {
+    "feraSearch": {
+      "schema": "schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "script": "api.js",
+        "events": ["startup"]
+      }
+    }
+  }
+}
