@@ -10,13 +10,22 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
+      # 🧹 Free space (CRITICAL)
+      - name: Free disk space
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force "C:\Program Files\dotnet" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "C:\hostedtoolcache" -ErrorAction SilentlyContinue
+
+      # 📁 Output folder
       - name: Prepare output folder
         shell: pwsh
         run: New-Item -ItemType Directory -Force downloadeds | Out-Null
 
-      # ✅ Install MozillaBuild to C:\mozilla-build (what mach expects)
+      # 🦊 Install MozillaBuild
       - name: Install MozillaBuild
         shell: pwsh
         run: |
@@ -26,14 +35,14 @@ jobs:
           Start-Process -FilePath $installer -ArgumentList "/S", "/D=C:\mozilla-build" -Wait
           if (!(Test-Path "C:\mozilla-build\start-shell.bat")) { throw "MozillaBuild install failed" }
 
-      # ✅ Ensure mach sees it
-      - name: Set MOZILLABUILD env
+      # 🔧 ENV
+      - name: Set MOZILLABUILD
         shell: pwsh
         run: |
-          echo "MOZILLABUILD=C:\mozilla-build" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "MOZILLABUILD=C:\mozilla-build" >> $env:GITHUB_ENV
 
-      # (Optional) Cache
-      - name: Cache mozbuild state
+      # ⚡ Cache
+      - name: Cache mozbuild
         uses: actions/cache@v4
         with:
           path: |
@@ -43,28 +52,48 @@ jobs:
           restore-keys: |
             mozbuild-${{ runner.os }}-
 
-      # ✅ Build (run inside MozillaBuild shell)
+      # 🧠 Detect correct source folder
+      - name: Detect source folder
+        id: detect
+        shell: pwsh
+        run: |
+          if (Test-Path "mach") {
+            echo "SRC_DIR=." >> $env:GITHUB_ENV
+          } else {
+            $dir = Get-ChildItem -Recurse -Filter mach -File | Select-Object -First 1
+            if (-not $dir) { throw "mach file not found!" }
+            $folder = Split-Path $dir.FullName -Parent
+            echo "SRC_DIR=$folder" >> $env:GITHUB_ENV
+          }
+
+      # 🧠 Bootstrap
+      - name: Bootstrap
+        shell: cmd
+        run: |
+          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %SRC_DIR% && ./mach --no-interactive bootstrap"
+
+      # 🔨 Build (safe mode)
       - name: Build
         shell: cmd
         run: |
-          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %GITHUB_WORKSPACE% && ./mach --no-interactive build"
+          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %SRC_DIR% && ./mach build -j2"
 
-      # ✅ Package
+      # 📦 Package
       - name: Package
         shell: cmd
         run: |
-          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %GITHUB_WORKSPACE% && ./mach --no-interactive package"
+          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %SRC_DIR% && ./mach package"
 
-      # ✅ Copy artifacts into downloadeds
+      # 📦 Collect output
       - name: Collect artifacts
         shell: pwsh
         run: |
-          $dist = Get-ChildItem -Directory -Path "obj-*" -Filter "dist" -Recurse | Select-Object -First 1
-          if (-not $dist) { throw "dist folder not found under obj-*." }
-          Get-ChildItem -Path $dist.FullName -Recurse -Include "*.exe","*.msi","*.zip" |
+          $dist = Get-ChildItem -Directory -Path "$env:SRC_DIR\obj-*" -Filter "dist" -Recurse | Select-Object -First 1
+          if (-not $dist) { throw "dist folder not found!" }
+          Get-ChildItem -Path $dist.FullName -Recurse -Include "*.exe","*.zip","*.msi" |
             Copy-Item -Destination "downloadeds" -Force
 
-      - name: Upload artifacts
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: fera-search-windows
