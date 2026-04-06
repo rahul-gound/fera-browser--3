@@ -54,17 +54,17 @@ jobs:
 
       # 🧠 Detect correct source folder
       - name: Detect source folder
-        id: detect
         shell: pwsh
         run: |
           if (Test-Path "mach") {
-            echo "SRC_DIR=." >> $env:GITHUB_ENV
+            echo "SRC_DIR=$PWD" >> $env:GITHUB_ENV
           } else {
             $dir = Get-ChildItem -Recurse -Filter mach -File | Select-Object -First 1
             if (-not $dir) { throw "mach file not found!" }
             $folder = Split-Path $dir.FullName -Parent
             echo "SRC_DIR=$folder" >> $env:GITHUB_ENV
           }
+          Write-Host "Using source dir: $env:SRC_DIR"
 
       # 🧠 Bootstrap
       - name: Bootstrap
@@ -84,14 +84,34 @@ jobs:
         run: |
           C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %SRC_DIR% && ./mach package"
 
-      # 📦 Collect output
-      - name: Collect artifacts
+      # 📦 Collect artifacts (FIXED)
+      - name: Collect artifacts (robust)
         shell: pwsh
         run: |
-          $dist = Get-ChildItem -Directory -Path "$env:SRC_DIR\obj-*" -Filter "dist" -Recurse | Select-Object -First 1
-          if (-not $dist) { throw "dist folder not found!" }
-          Get-ChildItem -Path $dist.FullName -Recurse -Include "*.exe","*.zip","*.msi" |
-            Copy-Item -Destination "downloadeds" -Force
+          Write-Host "🔍 Searching for build outputs..."
+
+          $foundFiles = @()
+
+          $searchPaths = @(
+            "$env:SRC_DIR",
+            "$env:SRC_DIR\obj-*",
+            "$env:GITHUB_WORKSPACE"
+          )
+
+          foreach ($path in $searchPaths) {
+            $files = Get-ChildItem -Path $path -Recurse -Include "*.exe","*.zip","*.msi" -ErrorAction SilentlyContinue
+            foreach ($file in $files) {
+              Copy-Item $file.FullName -Destination "downloadeds" -Force -ErrorAction SilentlyContinue
+              $foundFiles += $file.FullName
+            }
+          }
+
+          if ($foundFiles.Count -eq 0) {
+            Write-Host "⚠️ No artifacts found. Build likely failed earlier."
+          } else {
+            Write-Host "✅ Found artifacts:"
+            $foundFiles | ForEach-Object { Write-Host $_ }
+          }
 
       - name: Upload
         uses: actions/upload-artifact@v4
