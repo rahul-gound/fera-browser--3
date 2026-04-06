@@ -5,6 +5,9 @@ on:
   push:
     branches: [ main ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   win:
     runs-on: windows-latest
@@ -13,7 +16,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 🧹 Free space (CRITICAL)
+      # 🧹 Free space
       - name: Free disk space
         shell: pwsh
         run: |
@@ -41,18 +44,7 @@ jobs:
         run: |
           echo "MOZILLABUILD=C:\mozilla-build" >> $env:GITHUB_ENV
 
-      # ⚡ Cache
-      - name: Cache mozbuild
-        uses: actions/cache@v4
-        with:
-          path: |
-            C:\Users\runneradmin\.mozbuild
-            obj-*
-          key: mozbuild-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            mozbuild-${{ runner.os }}-
-
-      # 🧠 Detect correct source folder
+      # 🧠 Detect source folder
       - name: Detect source folder
         shell: pwsh
         run: |
@@ -64,7 +56,6 @@ jobs:
             $folder = Split-Path $dir.FullName -Parent
             echo "SRC_DIR=$folder" >> $env:GITHUB_ENV
           }
-          Write-Host "Using source dir: $env:SRC_DIR"
 
       # 🧠 Bootstrap
       - name: Bootstrap
@@ -72,45 +63,41 @@ jobs:
         run: |
           C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %SRC_DIR% && ./mach --no-interactive bootstrap"
 
-      # 🔨 Build (safe mode)
-      - name: Build
+      # 🔥 Build ONLY browser (IMPORTANT FIX)
+      - name: Build Browser
         shell: cmd
         run: |
-          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %SRC_DIR% && ./mach build -j2"
+          C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %SRC_DIR% && ./mach build browser -j2"
 
       # 📦 Package
-      - name: Package
+      - name: Package Browser
         shell: cmd
         run: |
           C:\mozilla-build\start-shell.bat -no-interactive -here -c "cd /d %SRC_DIR% && ./mach package"
 
-      # 📦 Collect artifacts (FIXED)
-      - name: Collect artifacts (robust)
+      # 🔍 Debug output (helps if things break)
+      - name: Debug output
         shell: pwsh
         run: |
-          Write-Host "🔍 Searching for build outputs..."
+          Write-Host "Listing EXE files..."
+          Get-ChildItem -Path "$env:SRC_DIR" -Recurse -Include "*.exe" -ErrorAction SilentlyContinue
 
-          $foundFiles = @()
+      # 📦 Collect REAL browser output
+      - name: Collect artifacts (correct)
+        shell: pwsh
+        run: |
+          $distPath = Get-ChildItem -Path "$env:SRC_DIR\obj-*" -Recurse -Directory -Filter "dist" | Select-Object -First 1
 
-          $searchPaths = @(
-            "$env:SRC_DIR",
-            "$env:SRC_DIR\obj-*",
-            "$env:GITHUB_WORKSPACE"
-          )
-
-          foreach ($path in $searchPaths) {
-            $files = Get-ChildItem -Path $path -Recurse -Include "*.exe","*.zip","*.msi" -ErrorAction SilentlyContinue
-            foreach ($file in $files) {
-              Copy-Item $file.FullName -Destination "downloadeds" -Force -ErrorAction SilentlyContinue
-              $foundFiles += $file.FullName
+          if ($distPath) {
+            $binPath = Join-Path $distPath.FullName "bin"
+            if (Test-Path $binPath) {
+              Copy-Item "$binPath\*" -Destination "downloadeds" -Recurse -Force
+              Write-Host "✅ Browser files collected from $binPath"
+            } else {
+              Write-Host "⚠️ bin folder not found"
             }
-          }
-
-          if ($foundFiles.Count -eq 0) {
-            Write-Host "⚠️ No artifacts found. Build likely failed earlier."
           } else {
-            Write-Host "✅ Found artifacts:"
-            $foundFiles | ForEach-Object { Write-Host $_ }
+            Write-Host "⚠️ dist folder not found (build likely failed)"
           }
 
       - name: Upload
